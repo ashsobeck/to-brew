@@ -3,9 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io"
 	"log/slog"
 	"net/http"
 	"os"
+	"time"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
@@ -16,9 +18,10 @@ import (
 )
 
 type ToBrew struct {
-	Id   string `json:"id"`
-	Name string `json:"name"`
-	Bean string `json:"bean"`
+	Id         string `json:"id"`
+	Name       string `json:"name"`
+	Bean       string `json:"bean"`
+	TimeToBrew string `json:"timeToBrew"`
 }
 
 type Server struct {
@@ -54,14 +57,28 @@ func main() {
 }
 
 func (s *Server) makeNewToBrew(w http.ResponseWriter, r *http.Request) {
-	tobrew := ToBrew{uuid.NewString(), "hello world name", "hello world bean"}
+	reqBody, err := io.ReadAll(r.Body)
+	if err != nil {
+		panic(err)
+	}
+
+	var brew ToBrew
+	json.Unmarshal(reqBody, &brew)
+
+	if brew.Id == "" {
+		brew.Id = uuid.NewString()
+	}
+
 	tx := s.db.MustBegin()
-	tx.MustExec(`INSERT INTO tobrews (id, name, bean)
-        VALUES (?, ?, ?)`,
-		tobrew.Id, tobrew.Name, tobrew.Bean)
+	slog.Info("Brew Name: %s", brew.Name)
+	slog.Info("Bean: %s", brew.Bean)
+	brewTime, _ := time.Parse(time.RFC3339, brew.TimeToBrew)
+	tx.MustExec(`INSERT INTO tobrews (id, name, bean, time_of_brew, created)
+        VALUES (?, ?, ?, ?, ?)`,
+		brew.Id, brew.Name, brew.Bean, brewTime, time.Now().UTC())
 	tx.Commit()
 
-	json.NewEncoder(w).Encode(tobrew)
+	json.NewEncoder(w).Encode(brew)
 }
 
 func (s *Server) handleRequests() {
