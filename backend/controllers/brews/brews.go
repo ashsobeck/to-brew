@@ -14,7 +14,11 @@ import (
 	. "tobrew/types/tobrew"
 )
 
-func (s *Server) makeNewBrew(w http.ResponseWriter, r *http.Request) {
+type BrewServer struct {
+	*Server
+}
+
+func (s *BrewServer) makeNewBrew(w http.ResponseWriter, r *http.Request) {
 	reqBody, err := io.ReadAll(r.Body)
 	if err != nil {
 		panic(err)
@@ -44,7 +48,7 @@ func (s *Server) makeNewBrew(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *Server) getBrew(w http.ResponseWriter, r *http.Request) {
+func (s *BrewServer) getBrew(w http.ResponseWriter, r *http.Request) {
 	// chi.URLParam gets the variables from the route NOT the query param
 	// ie: /brew/1234 where 1234 is id
 	id := chi.URLParam(r, "id")
@@ -59,7 +63,7 @@ func (s *Server) getBrew(w http.ResponseWriter, r *http.Request) {
 
 	slog.Info("Getting Brew with Id: %s", id)
 
-	tx := s.db.MustBegin()
+	tx := s.Db.MustBegin()
 	tx.MustExec(`DELETE FROM tobrews WHERE id=?`, id)
 	if err := tx.Commit(); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -70,10 +74,10 @@ func (s *Server) getBrew(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func (s *Server) getAllBrews(w http.ResponseWriter, r *http.Request) {
+func (s *BrewServer) getAllBrews(w http.ResponseWriter, r *http.Request) {
 	var brews []ToBrew
 
-	err := s.db.Select(&brews, "SELECT * FROM tobrews ORDER BY time_of_brew DESC")
+	err := s.Db.Select(&brews, "SELECT * FROM tobrews ORDER BY time_of_brew DESC")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		if _, err = w.Write([]byte(err.Error())); err != nil {
@@ -93,7 +97,7 @@ func (s *Server) getAllBrews(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *Server) deleteBrew(w http.ResponseWriter, r *http.Request) {
+func (s *BrewServer) deleteBrew(w http.ResponseWriter, r *http.Request) {
 	// chi.URLParam gets the variables from the route NOT the query param
 	// ie: /brew/1234 where 1234 is id
 	id := chi.URLParam(r, "id")
@@ -111,7 +115,7 @@ func (s *Server) deleteBrew(w http.ResponseWriter, r *http.Request) {
 	var brew ToBrew
 
 	// Get the brew and encode it back to the user
-	err := s.db.Get(&brew, `* FROM tobrews WHERE id=$1`, id)
+	err := s.Db.Get(&brew, `* FROM tobrews WHERE id=$1`, id)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		if _, err = w.Write([]byte(err.Error())); err != nil {
@@ -124,7 +128,7 @@ func (s *Server) deleteBrew(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *Server) brewRoutes() chi.Router {
+func (s *BrewServer) brewRoutes() chi.Router {
 	r := chi.NewRouter()
 
 	r.Use(middleware.RequestID)
