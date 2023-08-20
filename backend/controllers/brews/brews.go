@@ -1,4 +1,4 @@
-package brew
+package brews
 
 import (
 	"encoding/json"
@@ -10,24 +10,51 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/google/uuid"
-	. "tobrew/types/server"
-	. "tobrew/types/tobrew"
+	"tobrew/types/server"
+	"tobrew/types/tobrew"
 )
 
-type BrewServer struct {
-	*Server
+type Brews struct {
+	*server.Server
 }
 
-func (s *BrewServer) makeNewBrew(w http.ResponseWriter, r *http.Request) {
+type BrewController interface {
+	BrewRoutes() chi.Router
+}
+
+func (s *Brews) BrewRoutes() chi.Router {
+	r := chi.NewRouter()
+
+	r.Use(middleware.RequestID)
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
+
+	r.Get("/", s.getAllBrews)
+	r.Post("/", s.makeNewBrew)
+
+	r.Route("/{id}", func(r chi.Router) {
+		r.Get("/", s.getBrew)
+		r.Post("/", s.makeNewBrew)
+		r.Delete("/", s.deleteBrew)
+	})
+
+	return r
+}
+
+func (s *Brews) makeNewBrew(w http.ResponseWriter, r *http.Request) {
+
 	reqBody, err := io.ReadAll(r.Body)
 	if err != nil {
 		panic(err)
 	}
 
-	var brew ToBrew
+	var brew tobrew.ToBrew
 	err = json.Unmarshal(reqBody, &brew)
 	if err != nil {
 		panic(err)
+	}
+	if id := chi.URLParam(r, "id"); id != "" {
+		brew.Id = id
 	}
 
 	if brew.Id == "" {
@@ -48,7 +75,7 @@ func (s *BrewServer) makeNewBrew(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *BrewServer) getBrew(w http.ResponseWriter, r *http.Request) {
+func (s *Brews) getBrew(w http.ResponseWriter, r *http.Request) {
 	// chi.URLParam gets the variables from the route NOT the query param
 	// ie: /brew/1234 where 1234 is id
 	id := chi.URLParam(r, "id")
@@ -74,8 +101,8 @@ func (s *BrewServer) getBrew(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
 }
 
-func (s *BrewServer) getAllBrews(w http.ResponseWriter, r *http.Request) {
-	var brews []ToBrew
+func (s *Brews) getAllBrews(w http.ResponseWriter, r *http.Request) {
+	var brews []tobrew.ToBrew
 
 	err := s.Db.Select(&brews, "SELECT * FROM tobrews ORDER BY time_of_brew DESC")
 	if err != nil {
@@ -97,7 +124,7 @@ func (s *BrewServer) getAllBrews(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *BrewServer) deleteBrew(w http.ResponseWriter, r *http.Request) {
+func (s *Brews) deleteBrew(w http.ResponseWriter, r *http.Request) {
 	// chi.URLParam gets the variables from the route NOT the query param
 	// ie: /brew/1234 where 1234 is id
 	id := chi.URLParam(r, "id")
@@ -112,7 +139,7 @@ func (s *BrewServer) deleteBrew(w http.ResponseWriter, r *http.Request) {
 
 	slog.Info("Deleting Brew with Id: %s", id)
 
-	var brew ToBrew
+	var brew tobrew.ToBrew
 
 	// Get the brew and encode it back to the user
 	err := s.Db.Get(&brew, `* FROM tobrews WHERE id=$1`, id)
@@ -126,22 +153,4 @@ func (s *BrewServer) deleteBrew(w http.ResponseWriter, r *http.Request) {
 	if err = json.NewEncoder(w).Encode(brew); err != nil {
 		panic(err)
 	}
-}
-
-func (s *BrewServer) brewRoutes() chi.Router {
-	r := chi.NewRouter()
-
-	r.Use(middleware.RequestID)
-	r.Use(middleware.Logger)
-	r.Use(middleware.Recoverer)
-
-	r.Get("/", s.getAllBrews)
-
-	r.Route("/{id}", func(r chi.Router) {
-		r.Get("/", s.getBrew)
-		r.Post("/", s.makeNewBrew)
-		r.Delete("/", s.deleteBrew)
-	})
-
-	return r
 }
