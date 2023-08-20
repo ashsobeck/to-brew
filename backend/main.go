@@ -87,32 +87,29 @@ func (s *Server) makeNewBrew(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) getBrew(w http.ResponseWriter, r *http.Request) {
-	id := r.URL.Query().Get("id")
+	// chi.URLParam gets the variables from the route NOT the query param
+	// ie: /brew/1234 where 1234 is id
+	id := chi.URLParam(r, "id")
 
-	if id != "" {
-		slog.Info("Getting Brew with Id: %s", id)
-
-		var brew ToBrew
-
-		// Get the brew and encode it back to the user
-		err := s.db.Get(&brew, `SELECT * FROM tobrews WHERE id=$1`, id)
-		if err != nil {
-			w.WriteHeader(500)
-			if _, err = w.Write([]byte(err.Error())); err != nil {
-				panic(err)
-			}
-		}
-
-		if err = json.NewEncoder(w).Encode(brew); err != nil {
+	if id == "" {
+		// brew isn't found
+		w.WriteHeader(http.StatusNotFound)
+		if _, err := w.Write([]byte("Brew not found")); err != nil {
 			panic(err)
 		}
+	}
 
+	slog.Info("Getting Brew with Id: %s", id)
+
+	tx := s.db.MustBegin()
+	tx.MustExec(`DELETE FROM tobrews WHERE id=?`, id)
+	if err := tx.Commit(); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		if _, err = w.Write([]byte(err.Error())); err != nil {
+			panic(err)
+		}
 	}
-	// brew isn't found
-	w.WriteHeader(404)
-	if _, err := w.Write([]byte("Brew not found")); err != nil {
-		panic(err)
-	}
+	w.WriteHeader(http.StatusOK)
 }
 
 func (s *Server) getAllBrews(w http.ResponseWriter, r *http.Request) {
@@ -120,20 +117,51 @@ func (s *Server) getAllBrews(w http.ResponseWriter, r *http.Request) {
 
 	err := s.db.Select(&brews, "SELECT * FROM tobrews ORDER BY time_of_brew DESC")
 	if err != nil {
-		w.WriteHeader(500)
+		w.WriteHeader(http.StatusInternalServerError)
 		if _, err = w.Write([]byte(err.Error())); err != nil {
 			panic(err)
 		}
 	}
 
 	if len(brews) == 0 {
-		w.WriteHeader(404)
+		w.WriteHeader(http.StatusNotFound)
 		if _, err = w.Write([]byte("No brews found.")); err != nil {
 			panic(err)
 		}
 	}
 
 	if err = json.NewEncoder(w).Encode(brews); err != nil {
+		panic(err)
+	}
+}
+
+func (s *Server) deleteBrew(w http.ResponseWriter, r *http.Request) {
+	// chi.URLParam gets the variables from the route NOT the query param
+	// ie: /brew/1234 where 1234 is id
+	id := chi.URLParam(r, "id")
+
+	if id == "" {
+		// brew isn't found
+		w.WriteHeader(http.StatusNotFound)
+		if _, err := w.Write([]byte("Brew not found")); err != nil {
+			panic(err)
+		}
+	}
+
+	slog.Info("Deleting Brew with Id: %s", id)
+
+	var brew ToBrew
+
+	// Get the brew and encode it back to the user
+	err := s.db.Get(&brew, `* FROM tobrews WHERE id=$1`, id)
+	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		if _, err = w.Write([]byte(err.Error())); err != nil {
+			panic(err)
+		}
+	}
+
+	if err = json.NewEncoder(w).Encode(brew); err != nil {
 		panic(err)
 	}
 }
@@ -150,6 +178,7 @@ func (s *Server) brewRoutes() chi.Router {
 	r.Route("/{id}", func(r chi.Router) {
 		r.Get("/", s.getBrew)
 		r.Post("/", s.makeNewBrew)
+		r.Delete("/", s.deleteBrew)
 	})
 
 	return r
