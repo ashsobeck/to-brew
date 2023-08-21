@@ -1,12 +1,12 @@
-import { writable, type Writable } from "svelte/store";
+import { writable } from "svelte/store";
 import type { ToBrew } from "./types";
 
-export function makeStore(): Writable<ToBrew> {
-    let uid = 1;
+export function makeStore() {
     const initToBrew: ToBrew = {
-        id: uid++,
+        id: crypto.randomUUID(),
         done: false,
         time: new Date(),
+        bean: '',
         data: { coffee: 'Little Wolf Mystery' }
     };
     const tobrews: ToBrew[] = [initToBrew];
@@ -14,16 +14,10 @@ export function makeStore(): Writable<ToBrew> {
 
     return {
         subscribe,
-        add: (data: unknown) => {
-            const tobrew: ToBrew = {
-                id: uid++,
-                done: false,
-                time: new Date(),
-                data: data
-            };
-            update(($tobrews) => [...$tobrews, tobrew]);
+        add: (brew: ToBrew) => {
+            update(($tobrews) => [...$tobrews, brew]);
         },
-        remove: (id: number) => {
+        remove: (id: string) => {
             update(($tobrews) => $tobrews.filter((tobrew) => tobrew.id != id));
         },
         mark: (tobrew: ToBrew, done: boolean) => {

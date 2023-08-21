@@ -1,6 +1,7 @@
 export type ToBrew = {
-    id: number,
+    id: string,
     done: boolean,
     time: Date,
+    bean: string,
     data: unknown
 }

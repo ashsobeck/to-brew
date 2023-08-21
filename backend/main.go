@@ -55,7 +55,6 @@ func handleRequests(s *server.Server) {
 
 	brewController := brews.Brews{Server: s}
 
-	// r.Post("/new-brew", s.makeNewBrew)
 	r.Mount("/tobrews", brewController.BrewRoutes())
 
 	http.ListenAndServe(":3333", r)
