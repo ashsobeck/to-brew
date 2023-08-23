@@ -1,8 +1,12 @@
 <script lang="ts">
 	import type { ToBrew } from '../lib/types';
-	import type { Writable } from 'svelte/store';
-	export let store: Writable<ToBrew>;
-	export let done: boolean;
+	import { tobrews } from '$lib/tobrews';
+
+	let brews: ToBrew[];
+
+	tobrews.subscribe((b) => {
+		brews = b;
+	});
 </script>
 
 <ul>
