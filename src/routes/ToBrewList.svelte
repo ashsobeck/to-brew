@@ -10,5 +10,13 @@
 </script>
 
 <ul>
-	<li>hello</li>
+	{#each brews as brew, i}
+		<div>
+			<div>{brew.bean}</div>
+			<div>{brew.id}</div>
+			<div>{brew.time}</div>
+			<div>{i}</div>
+			<li>hello</li>
+		</div>
+	{/each}
 </ul>
