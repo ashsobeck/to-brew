@@ -103,11 +103,13 @@ func (s *Brews) getBrew(w http.ResponseWriter, r *http.Request) {
 
 func (s *Brews) getAllBrews(w http.ResponseWriter, r *http.Request) {
 	var brews []tobrew.ToBrew
+	slog.Info("Getting all brews...")
 
 	err := s.Db.Select(&brews, "SELECT * FROM tobrews ORDER BY time_of_brew DESC")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		if _, err = w.Write([]byte(err.Error())); err != nil {
+			slog.Error(err.Error())
 			panic(err)
 		}
 	}
@@ -115,11 +117,17 @@ func (s *Brews) getAllBrews(w http.ResponseWriter, r *http.Request) {
 	if len(brews) == 0 {
 		w.WriteHeader(http.StatusNotFound)
 		if _, err = w.Write([]byte("No brews found.")); err != nil {
+			slog.Error(err.Error())
 			panic(err)
 		}
 	}
 
+	for _, brew := range brews {
+		slog.Info(brew.Name)
+	}
+
 	if err = json.NewEncoder(w).Encode(brews); err != nil {
+		slog.Error(err.Error())
 		panic(err)
 	}
 }
