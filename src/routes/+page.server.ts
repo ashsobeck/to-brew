@@ -2,7 +2,7 @@ import type { ToBrew } from "$lib/types";
 
 type NullString = {
     String: string;
-    Valid: false;
+    Valid: boolean;
 };
 
 type Brew = ToBrew & {
