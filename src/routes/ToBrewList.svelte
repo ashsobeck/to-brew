@@ -1,6 +1,7 @@
 <script lang="ts">
 	import type { ToBrew } from '$lib/types';
 	import { tobrews } from '$lib/tobrews';
+	import AddBrew from './AddBrew.svelte';
 
 	let brews: ToBrew[];
 
@@ -13,12 +14,13 @@
 <ul>
 	{#each brews as brew, i}
 		<div>
-			<div>{brew.bean}</div>
-			<div>{brew.name}</div>
-			<div>{brew.id}</div>
-			<div>{brew.time}</div>
-			<div>{brew.done}</div>
-			<div>{i}</div>
+			<li>{brew.bean}</li>
+			<li>{brew.name}</li>
+			<li>{brew.id}</li>
+			<li>{brew.time}</li>
+			<li>{brew.done}</li>
+			<li>{i}</li>
 		</div>
 	{/each}
+	<AddBrew />
 </ul>
