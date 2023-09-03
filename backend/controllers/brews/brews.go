@@ -42,8 +42,8 @@ func (s *Brews) BrewRoutes() chi.Router {
 }
 
 func (s *Brews) makeNewBrew(w http.ResponseWriter, r *http.Request) {
-
 	reqBody, err := io.ReadAll(r.Body)
+	slog.Info("Request Body: %s", reqBody)
 	if err != nil {
 		panic(err)
 	}
@@ -55,9 +55,7 @@ func (s *Brews) makeNewBrew(w http.ResponseWriter, r *http.Request) {
 	}
 	if id := chi.URLParam(r, "id"); id != "" {
 		brew.Id = id
-	}
-
-	if brew.Id == "" {
+	} else {
 		brew.Id = uuid.NewString()
 	}
 

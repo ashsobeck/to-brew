@@ -1,20 +1,15 @@
-import type { ToBrew } from "$lib/types";
+import type { Brew } from "$lib/types";
 
-type NullString = {
-    String: string;
-    Valid: boolean;
-};
-
-type Brew = ToBrew & {
-    link: NullString;
-    roaster: NullString;
-    created: string;
-    timeToBrew: string;
-}
 export async function load() {
     // get data from api here
     // map it to ToBrew data type
-    const res = await fetch(`http://localhost:3333/tobrews/`, { method: 'GET' });
+    const res = await fetch(`http://localhost:3333/tobrews/`, {
+        method: 'GET', headers: {
+            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
+            'Access-Control-Allow-Origin': 'http://localhost',
+            'Access-Control-Allow-Headers': '*'
+        }
+    });
     const brews = await res.json();
     console.log(brews);
     return {

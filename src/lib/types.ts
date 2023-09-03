@@ -6,3 +6,15 @@ export type ToBrew = {
     bean: string,
     data: unknown
 }
+
+export type Brew = ToBrew & {
+    link: NullString;
+    roaster: NullString;
+    created: string;
+    timeToBrew: string;
+}
+
+export type NullString = {
+    String: string;
+    Valid: boolean;
+};
