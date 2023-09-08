@@ -7,9 +7,9 @@
 			method: 'POST',
 			body: JSON.stringify({
 				name: 'new brew',
-				roaster: 'S&W',
-				link: 'https://us.mystery.coffee',
-				date: new Date()
+				roaster: { String: 'S&W', Valid: true },
+				link: { String: 'https://us.mystery.coffee', Valid: true },
+				timeToBrew: new Date().toISOString()
 			}),
 			headers: {
 				'Content-Type': 'application/json',
@@ -18,6 +18,7 @@
 		});
 
 		const brew = (await response.json()) as Brew;
+		console.log(brew);
 
 		let newBrew: ToBrew = {
 			id: brew.id,

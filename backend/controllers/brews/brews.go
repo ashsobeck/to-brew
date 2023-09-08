@@ -62,7 +62,9 @@ func (s *Brews) makeNewBrew(w http.ResponseWriter, r *http.Request) {
 	tx := s.Db.MustBegin()
 	slog.Info("Brew Name: %s", brew.Name)
 	slog.Info("Bean: %s", brew.Bean)
+	slog.Info("Time: %s", brew.TimeToBrew)
 	brewTime, _ := time.Parse(time.RFC3339, brew.TimeToBrew)
+	slog.Info("Time: %s", brewTime)
 	tx.MustExec(`INSERT INTO tobrews (id, name, bean, time_of_brew, created)
         VALUES (?, ?, ?, ?, ?)`,
 		brew.Id, brew.Name, brew.Bean, brewTime, time.Now().UTC())
