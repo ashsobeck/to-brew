@@ -16,8 +16,8 @@
 
 <div class="flex p-2 w-full space-x-2">
 	<div class="card p-4 basis-1/2">
+		To Brew
 		<ul>
-			To Brew
 			{#each toBrew as brew, i}
 				<div class="p-2">
 					<li>{brew.bean}</li>
@@ -32,8 +32,8 @@
 		</ul>
 	</div>
 	<div class="card p-4 basis-1/2">
+		Brewed
 		<ul>
-			Brewed
 			{#each brewed as brew, i}
 				<div class="p-2">
 					<li>{brew.bean}</li>
