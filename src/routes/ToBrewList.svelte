@@ -10,37 +10,40 @@
 		brews = b;
 	});
 
-	$: toBrew = brews.filter((b: ToBrew) => b.done === true);
-	$: brewed = brews.filter((b: ToBrew) => b.done === false);
+	$: toBrew = brews.filter((b: ToBrew) => b.brewed === false);
+	$: brewed = brews.filter((b: ToBrew) => b.brewed === true);
 </script>
 
-<div class="card p-4">
-	<ul>
-		{#each toBrew as brew, i}
-			<div class="card">
-				<li>{brew.bean}</li>
-				<li>{brew.name}</li>
-				<li>{brew.id}</li>
-				<li>{brew.time}</li>
-				<li>{brew.done}</li>
-				<li>{i}</li>
-			</div>
-		{/each}
-		<AddBrew />
-	</ul>
-</div>
-<div class="card p-4">
-	<ul>
-		{#each brewed as brew, i}
-			<div class="card">
-				<li>{brew.bean}</li>
-				<li>{brew.name}</li>
-				<li>{brew.id}</li>
-				<li>{brew.time}</li>
-				<li>{brew.done}</li>
-				<li>{i}</li>
-			</div>
-		{/each}
-		<AddBrew />
-	</ul>
+<div class="flex p-2 w-full space-x-2">
+	<div class="card p-4 basis-1/2">
+		<ul>
+			To Brew
+			{#each toBrew as brew, i}
+				<div class="p-2">
+					<li>{brew.bean}</li>
+					<li>{brew.name}</li>
+					<li>{brew.id}</li>
+					<li>{new Date(brew.time).toTimeString()}</li>
+					<li>{brew.brewed}</li>
+					<li>{i}</li>
+				</div>
+			{/each}
+			<AddBrew />
+		</ul>
+	</div>
+	<div class="card p-4 basis-1/2">
+		<ul>
+			Brewed
+			{#each brewed as brew, i}
+				<div class="p-2">
+					<li>{brew.bean}</li>
+					<li>{brew.name}</li>
+					<li>{brew.id}</li>
+					<li>{brew.time}</li>
+					<li>{brew.brewed}</li>
+					<li>{i}</li>
+				</div>
+			{/each}
+		</ul>
+	</div>
 </div>

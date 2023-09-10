@@ -18,7 +18,7 @@ export async function load() {
             return {
                 id: b.id,
                 name: b.name,
-                done: false,
+                brewed: b.brewed ?? false,
                 bean: b.bean,
                 time: b.timeToBrew
             }

@@ -9,5 +9,6 @@ type ToBrew struct {
 	Link       sql.NullString `json:"link"`
 	Roaster    sql.NullString `json:"roaster"`
 	TimeToBrew string         `db:"time_of_brew" json:"timeToBrew"`
+	Brewed     bool           `json:"brewed"`
 	Created    string         `json:"created"`
 }

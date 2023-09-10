@@ -9,6 +9,7 @@
 				name: 'new brew',
 				roaster: { String: 'S&W', Valid: true },
 				link: { String: 'https://us.mystery.coffee', Valid: true },
+				brewed: false,
 				timeToBrew: new Date().toISOString()
 			}),
 			headers: {
@@ -24,7 +25,7 @@
 			id: brew.id,
 			name: 'new brew',
 			bean: '',
-			done: false,
+			brewed: false,
 			time: new Date(),
 			data: {}
 		};

@@ -108,6 +108,7 @@ func (s *Brews) getAllBrews(w http.ResponseWriter, r *http.Request) {
 	err := s.Db.Select(&brews, "SELECT * FROM tobrews ORDER BY time_of_brew DESC")
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		slog.Error(err.Error())
 		if _, err = w.Write([]byte(err.Error())); err != nil {
 			slog.Error(err.Error())
 			panic(err)
