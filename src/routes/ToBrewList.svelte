@@ -15,11 +15,11 @@
 </script>
 
 <div class="flex p-2 w-full space-x-2">
-	<div class="card card-hover p-4 basis-1/2">
+	<div class="card p-4 basis-1/2">
 		To Brew
 		<ul>
 			{#each toBrew as brew, i}
-				<div class="p-2">
+				<div class="card card-hover p-2">
 					<li>{brew.bean}</li>
 					<li>{brew.name}</li>
 					<li>{brew.id}</li>
@@ -35,7 +35,7 @@
 		Brewed
 		<ul>
 			{#each brewed as brew, i}
-				<div class="p-2">
+				<div class="card card-hover p-2">
 					<li>{brew.bean}</li>
 					<li>{brew.name}</li>
 					<li>{brew.id}</li>

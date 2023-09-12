@@ -2,6 +2,7 @@
 	import { tobrews } from '$lib/tobrews';
 	import type { ToBrew, Brew } from '$lib/types';
 
+	let showBrew = false;
 	const addBrew = async () => {
 		const response = await fetch('http://localhost:3333/tobrews/', {
 			method: 'POST',
@@ -26,12 +27,22 @@
 			name: 'new brew',
 			bean: '',
 			brewed: false,
-			time: new Date(),
-			data: {}
+			time: new Date()
 		};
 
 		tobrews.update((brews) => [newBrew, ...brews]);
 	};
 </script>
 
-<button on:click={addBrew}>+ Add Brew</button>
+{#if showBrew}
+	<form action="?/create">
+		<div class="card p-2">
+			<label class="label">Bean: <input class="input" name="bean" /> </label>
+			<label class="label">Time: <input class="input" name="time" /> </label>
+			<label class="label">Name: <input class="input" name="name" /> </label>
+			<label class="label">Roaster: <input class="input" name="roaster" /> </label>
+			<label class="label">Link: <input class="input" name="link" /> </label>
+		</div>
+	</form>
+{/if}
+<button on:click={() => (showBrew = true)}>+ Add Brew</button>

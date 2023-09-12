@@ -13,7 +13,7 @@ export async function load() {
     const brews = await res.json();
     console.log(brews);
     return {
-        brews: brews.map((b: Brew) => {
+        brews: brews?.map((b: Brew) => {
             console.log(b);
             return {
                 id: b.id,
@@ -22,6 +22,6 @@ export async function load() {
                 bean: b.bean,
                 time: b.timeToBrew
             }
-        })
+        }) ?? []
     }
 }

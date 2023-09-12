@@ -115,13 +115,13 @@ func (s *Brews) getAllBrews(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	if len(brews) == 0 {
-		w.WriteHeader(http.StatusNotFound)
-		if _, err = w.Write([]byte("No brews found.")); err != nil {
-			slog.Error(err.Error())
-			panic(err)
-		}
-	}
+	// if len(brews) == 0 {
+	// 	w.WriteHeader(http.StatusNotFound)
+	// 	if _, err = w.Write([]byte("No brews found.")); err != nil {
+	// 		slog.Error(err.Error())
+	// 		panic(err)
+	// 	}
+	// }
 
 	for _, brew := range brews {
 		slog.Info(brew.Name)
