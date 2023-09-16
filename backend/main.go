@@ -13,7 +13,7 @@ import (
 	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
 	"tobrew/controllers/brews"
-	"tobrew/types/server"
+	"tobrew/types"
 )
 
 func main() {
@@ -40,11 +40,11 @@ func main() {
 	}
 	defer db.Close()
 
-	s := server.Server{Db: db}
+	s := types.Server{Db: db}
 	handleRequests(&s)
 }
 
-func handleRequests(s *server.Server) {
+func handleRequests(s *types.Server) {
 	r := chi.NewRouter()
 	r.Use(middleware.RequestID)
 	r.Use(middleware.Logger)

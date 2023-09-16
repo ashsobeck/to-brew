@@ -1,4 +1,4 @@
-package tobrew
+package types
 
 import "database/sql"
 

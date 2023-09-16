@@ -10,12 +10,11 @@ import (
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/google/uuid"
-	"tobrew/types/server"
-	"tobrew/types/tobrew"
+	"tobrew/types"
 )
 
 type Brews struct {
-	*server.Server
+	*types.Server
 }
 
 type BrewController interface {
@@ -48,7 +47,7 @@ func (s *Brews) makeNewBrew(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 
-	var brew tobrew.ToBrew
+	var brew types.ToBrew
 	err = json.Unmarshal(reqBody, &brew)
 	if err != nil {
 		panic(err)
@@ -102,7 +101,7 @@ func (s *Brews) getBrew(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Brews) getAllBrews(w http.ResponseWriter, r *http.Request) {
-	var brews []tobrew.ToBrew
+	var brews []types.ToBrew
 	slog.Info("Getting all brews...")
 
 	err := s.Db.Select(&brews, "SELECT * FROM tobrews ORDER BY time_of_brew DESC")
@@ -148,7 +147,7 @@ func (s *Brews) deleteBrew(w http.ResponseWriter, r *http.Request) {
 
 	slog.Info("Deleting Brew with Id: %s", id)
 
-	var brew tobrew.ToBrew
+	var brew types.ToBrew
 
 	// Get the brew and encode it back to the user
 	err := s.Db.Get(&brew, `* FROM tobrews WHERE id=$1`, id)
