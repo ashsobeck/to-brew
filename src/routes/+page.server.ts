@@ -49,4 +49,23 @@ export const actions: Actions = {
         console.log(brew);
 
     },
+    brewed: async ({ cookies, request }) => {
+        const data = await request.formData()
+        const response = await fetch(`http://localhost:3333/tobrews/${data.get('id')}`, {
+            method: 'PUT',
+            body: JSON.stringify({
+                name: data.get('name'),
+                roaster: { String: data.get('roaster'), Valid: true },
+                link: { String: data.get('link'), Valid: true },
+                brewed: false,
+                timeToBrew: data.get('time')
+            }),
+            headers: {
+                'Content-Type': 'application/json',
+                Origin: 'http://localhost:5173/'
+            }
+        })
+        const brew = (await response.json()) as Brew;
+        console.log(brew)
+    }
 }

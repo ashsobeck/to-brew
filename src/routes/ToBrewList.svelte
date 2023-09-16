@@ -26,6 +26,9 @@
 					<li>{new Date(brew.time).toTimeString()}</li>
 					<li>{brew.brewed}</li>
 					<li>{i}</li>
+					<form method="POST" action="?/brewed">
+						<button class="button" />
+					</form>
 				</div>
 			{/each}
 			<AddBrew />

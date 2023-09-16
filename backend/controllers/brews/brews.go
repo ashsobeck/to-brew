@@ -34,6 +34,7 @@ func (s *Brews) BrewRoutes() chi.Router {
 	r.Route("/{id}", func(r chi.Router) {
 		r.Get("/", s.getBrew)
 		r.Post("/", s.makeNewBrew)
+		r.Put("/", s.markAsBrewed)
 		r.Delete("/", s.deleteBrew)
 	})
 
@@ -152,6 +153,41 @@ func (s *Brews) deleteBrew(w http.ResponseWriter, r *http.Request) {
 	// Get the brew and encode it back to the user
 	err := s.Db.Get(&brew, `* FROM tobrews WHERE id=$1`, id)
 	if err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+		if _, err = w.Write([]byte(err.Error())); err != nil {
+			panic(err)
+		}
+	}
+	// TODO: actually delete the brew
+
+	if err = json.NewEncoder(w).Encode(brew); err != nil {
+		panic(err)
+	}
+}
+
+func (s *Brews) markAsBrewed(w http.ResponseWriter, r *http.Request) {
+	reqBody, err := io.ReadAll(r.Body)
+	if id := chi.URLParam(r, "id"); id == "" {
+		w.WriteHeader(http.StatusNotFound)
+		if _, err := w.Write([]byte("Brew not found")); err != nil {
+			panic(err)
+		}
+	}
+
+	var brew types.ToBrew
+	err = json.Unmarshal(reqBody, &brew)
+	if err != nil {
+		panic(err)
+	}
+
+	tx := s.Db.MustBegin()
+	tx.MustExec(`
+        UPDATE tobrews 
+        SET name = ?, bean = ?, link = ?, roaster = ?, brewed = ?
+        WHERE id = ?
+    `, brew.Name, brew.Bean, brew.Link, brew.Roaster, brew.Brewed)
+
+	if err = tx.Commit(); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 		if _, err = w.Write([]byte(err.Error())); err != nil {
 			panic(err)
