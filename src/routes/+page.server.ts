@@ -30,6 +30,8 @@ export async function load() {
 export const actions: Actions = {
     create: async ({ cookies, request }) => {
         const data = await request.formData()
+        console.log("creating...")
+        console.log(data)
         const response = await fetch('http://localhost:3333/tobrews/', {
             method: 'POST',
             body: JSON.stringify({
@@ -37,7 +39,7 @@ export const actions: Actions = {
                 roaster: { String: data.get('roaster'), Valid: true },
                 link: { String: data.get('link'), Valid: true },
                 brewed: false,
-                timeToBrew: data.get('time')
+                timeToBrew: new Date(data.get('time') as string).toISOString()
             }),
             headers: {
                 'Content-Type': 'application/json',
