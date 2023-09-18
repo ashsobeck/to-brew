@@ -21,6 +21,8 @@ export async function load() {
                 name: b.name,
                 brewed: b.brewed ?? false,
                 bean: b.bean,
+                link: b.link.String,
+                roaster: b.roaster.String,
                 time: b.timeToBrew
             }
         }) ?? []
@@ -36,8 +38,9 @@ export const actions: Actions = {
             method: 'POST',
             body: JSON.stringify({
                 name: data.get('name'),
-                roaster: { String: data.get('roaster'), Valid: true },
-                link: { String: data.get('link'), Valid: true },
+                bean: data.get('bean'),
+                roaster: { String: data.get('roaster') as string, Valid: true },
+                link: { String: data.get('link') as string, Valid: true },
                 brewed: false,
                 timeToBrew: new Date(data.get('time') as string).toISOString()
             }),
@@ -53,14 +56,16 @@ export const actions: Actions = {
     },
     brewed: async ({ cookies, request }) => {
         const data = await request.formData()
-        const response = await fetch(`http://localhost:3333/tobrews/${data.get('id')}`, {
+        console.log(data)
+        const brewData = data.get('brew') as unknown as ToBrew;
+        const response = await fetch(`http://localhost:3333/tobrews/${brewData?.id}`, {
             method: 'PUT',
             body: JSON.stringify({
-                name: data.get('name'),
-                roaster: { String: data.get('roaster'), Valid: true },
-                link: { String: data.get('link'), Valid: true },
-                brewed: false,
-                timeToBrew: data.get('time')
+                name: brewData.name,
+                roaster: { String: brewData.roaster, Valid: true },
+                link: { String: brewData.link, Valid: true },
+                brewed: true,
+                timeToBrew: brewData.time
             }),
             headers: {
                 'Content-Type': 'application/json',
@@ -68,6 +73,7 @@ export const actions: Actions = {
             }
         })
         const brew = (await response.json()) as Brew;
+        console.log("marked as brewed:")
         console.log(brew)
     }
 }

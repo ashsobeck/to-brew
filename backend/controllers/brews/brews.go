@@ -65,9 +65,9 @@ func (s *Brews) makeNewBrew(w http.ResponseWriter, r *http.Request) {
 	slog.Info("Time: %s", brew.TimeToBrew)
 	brewTime, _ := time.Parse(time.RFC3339, brew.TimeToBrew)
 	slog.Info("Time: %s", brewTime)
-	tx.MustExec(`INSERT INTO tobrews (id, name, bean, time_of_brew, created)
-        VALUES (?, ?, ?, ?, ?)`,
-		brew.Id, brew.Name, brew.Bean, brewTime, time.Now().UTC())
+	tx.MustExec(`INSERT INTO tobrews (id, name, bean, roaster, link, brewed, time_of_brew, created)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
+		brew.Id, brew.Name, brew.Bean, brew.Roaster.String, brew.Link.String, brew.Brewed, brewTime, time.Now().UTC())
 	tx.Commit()
 
 	if err = json.NewEncoder(w).Encode(brew); err != nil {
@@ -167,6 +167,7 @@ func (s *Brews) deleteBrew(w http.ResponseWriter, r *http.Request) {
 
 func (s *Brews) markAsBrewed(w http.ResponseWriter, r *http.Request) {
 	reqBody, err := io.ReadAll(r.Body)
+	slog.Info(string(reqBody))
 	if id := chi.URLParam(r, "id"); id == "" {
 		w.WriteHeader(http.StatusNotFound)
 		if _, err := w.Write([]byte("Brew not found")); err != nil {
@@ -185,7 +186,7 @@ func (s *Brews) markAsBrewed(w http.ResponseWriter, r *http.Request) {
         UPDATE tobrews 
         SET name = ?, bean = ?, link = ?, roaster = ?, brewed = ?
         WHERE id = ?
-    `, brew.Name, brew.Bean, brew.Link, brew.Roaster, brew.Brewed)
+    `, brew.Name, brew.Bean, brew.Link, brew.Roaster, brew.Brewed, brew.Id)
 
 	if err = tx.Commit(); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

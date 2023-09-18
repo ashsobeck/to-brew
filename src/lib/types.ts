@@ -4,6 +4,8 @@ export type ToBrew = {
     brewed: boolean,
     time: Date,
     bean: string,
+    roaster: string,
+    link: string
 }
 
 export type Brew = ToBrew & {

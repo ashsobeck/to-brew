@@ -27,8 +27,8 @@
 					<li>{brew.brewed}</li>
 					<li>{i}</li>
 					<form method="POST" action="?/brewed">
-						<input type="hidden" name="id" value={brew.id} />
-						<button class="button" type="submit" />
+						<input type="hidden" name="brew" value={brew} />
+						<button class="btn variant-filled" type="submit">brew</button>
 					</form>
 				</div>
 			{/each}
