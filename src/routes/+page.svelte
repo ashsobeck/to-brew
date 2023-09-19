@@ -7,7 +7,6 @@
 	};
 	export let data: BrewData;
 
-	console.log(data);
 	tobrews.set(data.brews);
 </script>
 

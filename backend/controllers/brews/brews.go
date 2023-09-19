@@ -168,7 +168,8 @@ func (s *Brews) deleteBrew(w http.ResponseWriter, r *http.Request) {
 func (s *Brews) markAsBrewed(w http.ResponseWriter, r *http.Request) {
 	reqBody, err := io.ReadAll(r.Body)
 	slog.Info(string(reqBody))
-	if id := chi.URLParam(r, "id"); id == "" {
+	id := chi.URLParam(r, "id")
+	if id == "" {
 		w.WriteHeader(http.StatusNotFound)
 		if _, err := w.Write([]byte("Brew not found")); err != nil {
 			panic(err)
@@ -186,7 +187,7 @@ func (s *Brews) markAsBrewed(w http.ResponseWriter, r *http.Request) {
         UPDATE tobrews 
         SET name = ?, bean = ?, link = ?, roaster = ?, brewed = ?
         WHERE id = ?
-    `, brew.Name, brew.Bean, brew.Link, brew.Roaster, brew.Brewed, brew.Id)
+    `, brew.Name, brew.Bean, brew.Link, brew.Roaster, brew.Brewed, id)
 
 	if err = tx.Commit(); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)

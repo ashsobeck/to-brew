@@ -2,6 +2,7 @@
 	import type { ToBrew } from '$lib/types';
 	import { tobrews } from '$lib/tobrews';
 	import AddBrew from './AddBrew.svelte';
+	import { enhance } from '$app/forms';
 
 	let brews: ToBrew[];
 
@@ -26,9 +27,14 @@
 					<li>{new Date(brew.time).toTimeString()}</li>
 					<li>{brew.brewed}</li>
 					<li>{i}</li>
-					<form method="POST" action="?/brewed">
-						<input type="hidden" name="brew" value={brew} />
-						<button class="btn variant-filled" type="submit">brew</button>
+					<form method="POST" action="?/brewed" use:enhance>
+						<input type="hidden" name="id" value={brew.id} />
+						<input type="hidden" name="name" value={brew.name} />
+						<input type="hidden" name="time" value={new Date(brew.time).toISOString()} />
+						<input type="hidden" name="link" value={brew.link} />
+						<input type="hidden" name="roaster" value={brew.roaster} />
+						<input type="hidden" name="bean" value={brew.bean} />
+						<button class="btn variant-filled">brew</button>
 					</form>
 				</div>
 			{/each}

@@ -12,7 +12,6 @@ export async function load() {
         }
     });
     const brews = await res.json();
-    console.log(brews);
     return {
         brews: brews?.map((b: Brew) => {
             console.log(b);
@@ -55,17 +54,18 @@ export const actions: Actions = {
 
     },
     brewed: async ({ cookies, request }) => {
-        const data = await request.formData()
+        const data = await request.formData();
         console.log(data)
-        const brewData = data.get('brew') as unknown as ToBrew;
-        const response = await fetch(`http://localhost:3333/tobrews/${brewData?.id}`, {
+        const time = data.get('time')?.toString() ?? new Date().toISOString()
+        console.log(time)
+        const response = await fetch(`http://localhost:3333/tobrews/${data.get('id')?.toString()}`, {
             method: 'PUT',
             body: JSON.stringify({
-                name: brewData.name,
-                roaster: { String: brewData.roaster, Valid: true },
-                link: { String: brewData.link, Valid: true },
+                name: data.get('name')?.toString(),
+                roaster: { String: data.get('roaster')?.toString(), Valid: true },
+                link: { String: data.get('link')?.toString(), Valid: true },
                 brewed: true,
-                timeToBrew: brewData.time
+                timeToBrew: time
             }),
             headers: {
                 'Content-Type': 'application/json',
