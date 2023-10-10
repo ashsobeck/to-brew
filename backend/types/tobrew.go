@@ -11,4 +11,7 @@ type ToBrew struct {
 	TimeToBrew string         `db:"time_of_brew" json:"timeToBrew"`
 	Brewed     bool           `json:"brewed"`
 	Created    string         `json:"created"`
+	NewBean    Bean
+	BeanWeight float32
+	BrewWeight float32
 }
