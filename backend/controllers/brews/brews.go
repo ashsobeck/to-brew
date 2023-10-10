@@ -75,7 +75,7 @@ func (s *Brews) makeNewBrew(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *Brews) getBrew(w http.ResponseWriter, r *http.Request) {
+func (s *Brews) deleteBrew(w http.ResponseWriter, r *http.Request) {
 	// chi.URLParam gets the variables from the route NOT the query param
 	// ie: /brew/1234 where 1234 is id
 	id := chi.URLParam(r, "id")
@@ -88,7 +88,7 @@ func (s *Brews) getBrew(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	slog.Info("Getting Brew with Id: %s", id)
+	slog.Info("Deleting Brew with Id: %s", id)
 
 	tx := s.Db.MustBegin()
 	tx.MustExec(`DELETE FROM tobrews WHERE id=?`, id)
@@ -133,7 +133,7 @@ func (s *Brews) getAllBrews(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *Brews) deleteBrew(w http.ResponseWriter, r *http.Request) {
+func (s *Brews) getBrew(w http.ResponseWriter, r *http.Request) {
 	// chi.URLParam gets the variables from the route NOT the query param
 	// ie: /brew/1234 where 1234 is id
 	id := chi.URLParam(r, "id")
@@ -146,7 +146,7 @@ func (s *Brews) deleteBrew(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	slog.Info("Deleting Brew with Id: %s", id)
+	slog.Info("Getting Brew with Id: %s", id)
 
 	var brew types.ToBrew
 
@@ -158,7 +158,6 @@ func (s *Brews) deleteBrew(w http.ResponseWriter, r *http.Request) {
 			panic(err)
 		}
 	}
-	// TODO: actually delete the brew
 
 	if err = json.NewEncoder(w).Encode(brew); err != nil {
 		panic(err)
