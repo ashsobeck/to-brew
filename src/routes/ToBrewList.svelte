@@ -4,15 +4,10 @@
 	import AddBrew from './AddBrew.svelte';
 	import { enhance } from '$app/forms';
 
-	let brews: ToBrew[];
-
-	tobrews.subscribe((b) => {
-		console.log(b);
-		brews = b;
-	});
-
-	$: toBrew = brews.filter((b: ToBrew) => b.brewed === false);
-	$: brewed = brews.filter((b: ToBrew) => b.brewed === true);
+	$: toBrew = $tobrews.filter((b: ToBrew) => b.brewed === false);
+	$: brewed = $tobrews.filter((b: ToBrew) => b.brewed === true);
+	console.log(toBrew);
+	console.log(brewed);
 </script>
 
 <div class="flex p-2 w-full space-x-2">
@@ -34,6 +29,7 @@
 						<input type="hidden" name="link" value={brew.link} />
 						<input type="hidden" name="roaster" value={brew.roaster} />
 						<input type="hidden" name="bean" value={brew.bean} />
+						<input type="hidden" name="brewed" value={brew.brewed} />
 						<button class="btn variant-filled">brew</button>
 					</form>
 				</div>
@@ -53,6 +49,16 @@
 					<li>{brew.brewed}</li>
 					<li>{i}</li>
 				</div>
+				<form method="POST" action="?/brewed" use:enhance>
+					<input type="hidden" name="id" value={brew.id} />
+					<input type="hidden" name="name" value={brew.name} />
+					<input type="hidden" name="time" value={new Date(brew.time).toISOString()} />
+					<input type="hidden" name="link" value={brew.link} />
+					<input type="hidden" name="roaster" value={brew.roaster} />
+					<input type="hidden" name="bean" value={brew.bean} />
+					<input type="hidden" name="brewed" value={brew.brewed} />
+					<button class="btn variant-filled">rebrew</button>
+				</form>
 			{/each}
 		</ul>
 	</div>

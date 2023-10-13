@@ -34,7 +34,7 @@ func (s *Brews) BrewRoutes() chi.Router {
 	r.Route("/{id}", func(r chi.Router) {
 		r.Get("/", s.getBrew)
 		r.Post("/", s.makeNewBrew)
-		r.Put("/", s.markAsBrewed)
+		r.Put("/", s.updateBrew)
 		r.Delete("/", s.deleteBrew)
 	})
 
@@ -164,7 +164,7 @@ func (s *Brews) getBrew(w http.ResponseWriter, r *http.Request) {
 	}
 }
 
-func (s *Brews) markAsBrewed(w http.ResponseWriter, r *http.Request) {
+func (s *Brews) updateBrew(w http.ResponseWriter, r *http.Request) {
 	reqBody, err := io.ReadAll(r.Body)
 	slog.Info(string(reqBody))
 	id := chi.URLParam(r, "id")
@@ -177,6 +177,7 @@ func (s *Brews) markAsBrewed(w http.ResponseWriter, r *http.Request) {
 
 	var brew types.ToBrew
 	err = json.Unmarshal(reqBody, &brew)
+	brew.Id = id
 	if err != nil {
 		panic(err)
 	}

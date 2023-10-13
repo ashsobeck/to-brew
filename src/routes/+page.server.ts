@@ -14,7 +14,6 @@ export async function load() {
     const brews = await res.json();
     return {
         brews: brews?.map((b: Brew) => {
-            console.log(b);
             return {
                 id: b.id,
                 name: b.name,
@@ -58,13 +57,18 @@ export const actions: Actions = {
         console.log(data)
         const time = data.get('time')?.toString() ?? new Date().toISOString()
         console.log(time)
+        const strToBool = (str: string | undefined) => {
+            if (str === "true")
+                return true;
+            return false;
+        }
         const response = await fetch(`http://localhost:3333/tobrews/${data.get('id')?.toString()}`, {
             method: 'PUT',
             body: JSON.stringify({
                 name: data.get('name')?.toString(),
                 roaster: { String: data.get('roaster')?.toString(), Valid: true },
                 link: { String: data.get('link')?.toString(), Valid: true },
-                brewed: true,
+                brewed: !strToBool(data.get('brewed')?.toString()),
                 timeToBrew: time
             }),
             headers: {
