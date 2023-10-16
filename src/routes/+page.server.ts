@@ -1,4 +1,4 @@
-import type { Brew, ToBrew } from "$lib/types";
+import { convertBrew, type Brew, type ToBrew } from "$lib/types";
 import type { Actions } from "@sveltejs/kit";
 
 export async function load() {
@@ -12,17 +12,10 @@ export async function load() {
         }
     });
     const brews = await res.json();
+    console.log
     return {
         brews: brews?.map((b: Brew) => {
-            return {
-                id: b.id,
-                name: b.name,
-                brewed: b.brewed ?? false,
-                bean: b.bean,
-                link: b.link.String,
-                roaster: b.roaster.String,
-                time: b.timeToBrew
-            }
+            return convertBrew(b)
         }) ?? []
     }
 }
@@ -52,7 +45,7 @@ export const actions: Actions = {
         console.log(brew);
 
     },
-    brewed: async ({ cookies, request }) => {
+    brewed: async ({ cookies, request }): Promise<{ success: boolean; brew: ToBrew; }> => {
         const data = await request.formData();
         console.log(data)
         const time = data.get('time')?.toString() ?? new Date().toISOString()
@@ -75,9 +68,11 @@ export const actions: Actions = {
                 'Content-Type': 'application/json',
                 Origin: 'http://localhost:5173/'
             }
-        })
+        });
         const brew = (await response.json()) as Brew;
         console.log("marked as brewed:")
         console.log(brew)
+        console.log(convertBrew(brew))
+        return { success: brew !== null, brew: convertBrew(brew) }
     }
 }
