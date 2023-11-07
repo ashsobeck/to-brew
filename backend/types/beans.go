@@ -1,12 +1,13 @@
 package types
 
 type Bean struct {
-	Name     string
-	Roaster  string
-	Country  string
-	Varietal string
-	Process  string
-	Altitude string
-	Notes    string
-	Weight   float32
+	Id string `json:"id"`
+	Name     string `json:"name"`
+	Roaster  string `json:"roaster"`
+	Country  string `json:"country"`
+	Varietal string `json:"varietal"`
+	Process  string `json:"process"`
+	Altitude string `json:"altitude"`
+	Notes    string `json:"notes"`
+	Weight   float32 `json:"weight"`
 }
