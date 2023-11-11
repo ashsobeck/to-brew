@@ -38,17 +38,17 @@
 			{#each toBrew as brew, i}
 				<div class="card card-hover p-2">
 					<li>{brew.bean}</li>
-					<li>{brew.name}</li>
+					<!-- <li>{brew.name}</li> -->
 					<li>{brew.id}</li>
 					<li>{brew.timeToBrew}</li>
 					<li>{brew.brewed}</li>
 					<li>{i}</li>
 					<form method="POST" action="?/brewed" use:enhance={updateBrew}>
 						<input type="hidden" name="id" value={brew.id} />
-						<input type="hidden" name="name" value={brew.name} />
+						<!-- <input type="hidden" name="name" value={brew.name} /> -->
 						<input type="hidden" name="time" value={new Date(brew.timeToBrew).toISOString()} />
-						<input type="hidden" name="link" value={brew.link} />
-						<input type="hidden" name="roaster" value={brew.roaster} />
+						<!-- <input type="hidden" name="link" value={brew.link} /> -->
+						<!-- <input type="hidden" name="roaster" value={brew.roaster} /> -->
 						<input type="hidden" name="bean" value={brew.bean} />
 						<input type="hidden" name="brewed" value={brew.brewed} />
 						<button class="btn variant-filled">brew</button>
@@ -64,7 +64,7 @@
 			{#each brewed as brew, i}
 				<div class="card card-hover p-2">
 					<li>{brew.bean}</li>
-					<li>{brew.name}</li>
+					<!-- <li>{brew.name}</li> -->
 					<li>{brew.id}</li>
 					<li>{brew.timeToBrew}</li>
 					<li>{brew.brewed}</li>
@@ -72,10 +72,10 @@
 				</div>
 				<form method="POST" action="?/brewed" use:enhance={updateBrew}>
 					<input type="hidden" name="id" value={brew.id} />
-					<input type="hidden" name="name" value={brew.name} />
+					<!-- <input type="hidden" name="name" value={brew.name} /> -->
 					<input type="hidden" name="time" value={new Date(brew.timeToBrew).toISOString()} />
-					<input type="hidden" name="link" value={brew.link} />
-					<input type="hidden" name="roaster" value={brew.roaster} />
+					<!-- <input type="hidden" name="link" value={brew.link} /> -->
+					<!-- <input type="hidden" name="roaster" value={brew.roaster} /> -->
 					<input type="hidden" name="bean" value={brew.bean} />
 					<input type="hidden" name="brewed" value={brew.brewed} />
 					<button class="btn variant-filled">rebrew</button>
