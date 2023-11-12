@@ -26,6 +26,10 @@ func (s *Beans) BeanRoutes() chi.Router {
 	r.Get("/", s.GetAllBeans)
 	r.Post("/", s.CreateNewBean)
 
+	r.Route("/{id}", func(r chi.Router) {
+		r.Delete("/", s.DeleteBean)
+	})
+
 	return r
 }
 
@@ -46,14 +50,16 @@ func (s *Beans) GetAllBeans(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Beans) CreateNewBean(w http.ResponseWriter, r *http.Request) {
-	var bean types.Bean	
+	var bean types.Bean
 	reqBody, err := io.ReadAll(r.Body)
 	if err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	if err = json.Unmarshal(reqBody, &bean); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		return
 	}
 
 	slog.Info("Creating new bean")
@@ -68,4 +74,20 @@ func (s *Beans) CreateNewBean(w http.ResponseWriter, r *http.Request) {
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+}
+
+func (s *Beans) DeleteBean(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+
+	tx := s.Db.MustBegin()
+	deleteBean := `DELETE FROM beans WHERE id = ?`
+	tx.MustExec(deleteBean, id)
+	if err := tx.Commit(); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+	w.WriteHeader(http.StatusOK)
 }
