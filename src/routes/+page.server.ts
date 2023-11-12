@@ -5,14 +5,12 @@ export async function load() {
     // get data from api here
     // map it to ToBrew data type
     const res = await fetch(`http://localhost:3333/tobrews/`, {
-        method: 'GET', headers: {
-            'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, PATCH, OPTIONS',
-            'Access-Control-Allow-Origin': 'http://localhost',
-            'Access-Control-Allow-Headers': '*'
+        method: 'GET',
+        headers: {
+            Origin: 'http://localhost:5173/'
         }
     });
     const brews = await res.json();
-    console.log
     return {
         brews: brews?.map((b: Brew) => {
             return convertBrew(b)
