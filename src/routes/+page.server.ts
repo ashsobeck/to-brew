@@ -25,15 +25,17 @@ export const actions: Actions = {
         const data = await request.formData()
         console.log("creating...")
         console.log(data)
+        const time = data.get('time') as string === '' ? new Date() : new Date(data.get('time') as string)
         const response = await fetch('http://localhost:3333/tobrews/', {
             method: 'POST',
             body: JSON.stringify({
-                name: data.get('name'),
+                // name: data.get('name'),
                 bean: data.get('bean'),
-                roaster: { String: data.get('roaster') as string, Valid: true },
-                link: { String: data.get('link') as string, Valid: true },
+                // roaster: { String: data.get('roaster') as string, Valid: true },
+                // link: { String: data.get('link') as string, Valid: true },
+                weight: data.get('weight'),
                 brewed: false,
-                timeToBrew: new Date(data.get('time') as string).toISOString()
+                timeToBrew: time.toISOString()
             }),
             headers: {
                 'Content-Type': 'application/json',
@@ -58,9 +60,9 @@ export const actions: Actions = {
         const response = await fetch(`http://localhost:3333/tobrews/${data.get('id')?.toString()}`, {
             method: 'PUT',
             body: JSON.stringify({
-                name: data.get('name')?.toString(),
-                roaster: { String: data.get('roaster')?.toString(), Valid: true },
-                link: { String: data.get('link')?.toString(), Valid: true },
+                // name: data.get('name')?.toString(),
+                // roaster: { String: data.get('roaster')?.toString(), Valid: true },
+                // link: { String: data.get('link')?.toString(), Valid: true },
                 brewed: !strToBool(data.get('brewed')?.toString()),
                 timeToBrew: time
             }),

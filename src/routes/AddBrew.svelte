@@ -5,13 +5,14 @@
 {#if showBrew}
 	<form method="POST" action="?/create">
 		<div class="card p-2">
-			<label class="label">Bean: <input class="input" name="bean" /> </label>
-			<label class="label">Time: <input class="input" name="time" /> </label>
-			<label class="label">Weight: 
-				<select class="select" name="weight">  
+			<label class="label"
+				>Bean:
+				<select class="select" name="bean">
 					<option value="big bean"> bean bean </option>
-				</select> 
+				</select>
 			</label>
+			<label class="label">Weight: <input class="input" name="weight" /> </label>
+			<label class="label">Time of Brew: <input class="input" name="time" /> </label>
 			<!-- <label class="label">Name: <input class="input" name="name" /> </label> -->
 			<!-- <label class="label">Roaster: <input class="input" name="roaster" /> </label> -->
 			<!-- <label class="label">Link: <input class="input" name="link" /> </label> -->

@@ -185,7 +185,7 @@ func (s *Brews) updateBrew(w http.ResponseWriter, r *http.Request) {
 	tx := s.Db.MustBegin()
 	tx.MustExec(`
         UPDATE tobrews 
-        SET name = ?, bean = ?, link = ?, roaster = ?, brewed = ?
+        SET name = IFNULL(?, name), bean = IFNULL(?, bean), link = IFNULL(?, link), roaster = IFNULL(?, roaster), brewed = IFNULL(?, brewed)
         WHERE id = ?
     `, brew.Name, brew.Bean, brew.Link, brew.Roaster, brew.Brewed, id)
 
