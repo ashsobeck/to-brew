@@ -6,14 +6,15 @@ import (
 	"net/http"
 	"os"
 
+	brews "tobrew/controllers"
+	"tobrew/types"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 	"github.com/joho/godotenv"
-	"tobrew/controllers/brews"
-	"tobrew/types"
 )
 
 func main() {
@@ -62,8 +63,10 @@ func handleRequests(s *types.Server) {
 	})
 
 	brewController := brews.Brews{Server: s}
+	beanController := brews.Beans{Server: s}
 
 	r.Mount("/tobrews", brewController.BrewRoutes())
+	r.Mount("/beans", beanController.BeanRoutes())
 
 	http.ListenAndServe(":3333", r)
 }
