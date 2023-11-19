@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { tobrews } from '$lib/tobrews';
+	import { tobrews } from '$lib/stores';
 	import type { ToBrew } from '$lib/types';
 	import type { ActionData } from './$types';
 	import ToBrewList from './ToBrewList.svelte';

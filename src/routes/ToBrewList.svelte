@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { ToBrew } from '$lib/types';
-	import { tobrews } from '$lib/tobrews';
+	import { tobrews } from '$lib/stores';
 	import AddBrew from './AddBrew.svelte';
 	import { applyAction, enhance } from '$app/forms';
 	import type { ActionData } from './$types';
