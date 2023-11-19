@@ -10,11 +10,21 @@ export async function load() {
             Origin: 'http://localhost:5173/'
         }
     });
+    // TODO: make this one call
+    const beanRes = await fetch(`http://localhost:3333/beans/`, {
+        method: 'GET',
+        headers: {
+            Origin: 'http://localhost:5173/'
+        }
+    });
     const brews = await res.json();
+    const beans = await beanRes.json();
+
     return {
         brews: brews?.map((b: Brew) => {
             return convertBrew(b)
-        }) ?? []
+        }) ?? [],
+        beans: beans ?? []
     }
 }
 
@@ -29,6 +39,7 @@ export const actions: Actions = {
             body: JSON.stringify({
                 // name: data.get('name'),
                 bean: data.get('bean'),
+                newBean: data.get('bean'),
                 // roaster: { String: data.get('roaster') as string, Valid: true },
                 // link: { String: data.get('link') as string, Valid: true },
                 weight: data.get('weight'),
