@@ -14,20 +14,20 @@ export async function load() {
 }
 
 export const actions = {
-	create: async ({request}) => {
+	create: async ({ request }) => {
 		const data = await request.formData();
 
 		const res = await fetch(`http://127.0.0.1:3333/beans/`, {
 			method: 'POST',
 			body: JSON.stringify({
-				name: data.get('name'), 
+				name: data.get('name'),
 				roaster: data.get('roaster'),
 				country: data.get('country'),
 				varietal: data.get('varietal'),
 				process: data.get('process'),
 				altitude: data.get('altitude'),
 				notes: data.get('notes'),
-				weight: data.get('weight')
+				weight: parseFloat(data.get('weight'))
 			}),
 			headers: {
 				Origin: 'http://127.0.0.1:5173'

@@ -53,11 +53,13 @@ func (s *Beans) CreateNewBean(w http.ResponseWriter, r *http.Request) {
 	var bean types.Bean
 	reqBody, err := io.ReadAll(r.Body)
 	if err != nil {
+		slog.Error(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
 
 	if err = json.Unmarshal(reqBody, &bean); err != nil {
+		slog.Error(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
@@ -71,9 +73,17 @@ func (s *Beans) CreateNewBean(w http.ResponseWriter, r *http.Request) {
 	tx.MustExec(insertBean, bean.Id, bean.Name, bean.Roaster, bean.Country, bean.Varietal, bean.Process, bean.Altitude, bean.Notes, bean.Weight)
 
 	if err = tx.Commit(); err != nil {
+		slog.Error(err.Error())
 		w.WriteHeader(http.StatusInternalServerError)
 		return
 	}
+
+	if err = json.NewEncoder(w).Encode(bean); err != nil {
+		slog.Error(err.Error())
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	w.WriteHeader(http.StatusOK)
 }
 
 func (s *Beans) DeleteBean(w http.ResponseWriter, r *http.Request) {
