@@ -1,7 +1,13 @@
 <script lang="ts">
 	import { beans } from '$lib/stores';
+	import { SlideToggle } from '@skeletonlabs/skeleton';
 
 	let showBrew = false;
+	let defaultTime = new Date().toLocaleTimeString([], {
+		hour12: false,
+		hour: '2-digit',
+		minute: '2-digit'
+	});
 
 	$: beanNamesAndIds = $beans.map((b) => {
 		return { name: b.name, id: b.id };
@@ -20,7 +26,16 @@
 				</select>
 			</label>
 			<label class="label">Weight: <input class="input" name="weight" /> </label>
-			<label class="label">Time of Brew: <input class="input" name="time" /> </label>
+			<label class="label"
+				>Time of Brew:
+				<div class="flex flex-row">
+					<input class="input" name="time" type="time" value={defaultTime} />
+					<!-- <input class="input" type="number" maxlength="2" /> -->
+					<!-- <SlideToggle name="slider-label" on:change={() => (pastMidday = !pastMidday)}> -->
+					<!-- 	{pastMidday ? 'PM' : 'AM'} -->
+					<!-- </SlideToggle> -->
+				</div>
+			</label>
 			<button class="button" type="submit">Create</button>
 		</div>
 	</form>
