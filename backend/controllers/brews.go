@@ -7,10 +7,11 @@ import (
 	"net/http"
 	"time"
 
+	"tobrew/types"
+
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/google/uuid"
-	"tobrew/types"
 )
 
 type Brews struct {
@@ -19,6 +20,11 @@ type Brews struct {
 
 type BrewController interface {
 	BrewRoutes() chi.Router
+}
+
+type brewIdWeight struct {
+	Id     string
+	Weight float32
 }
 
 func (s *Brews) BrewRoutes() chi.Router {
@@ -198,5 +204,25 @@ func (s *Brews) updateBrew(w http.ResponseWriter, r *http.Request) {
 
 	if err = json.NewEncoder(w).Encode(brew); err != nil {
 		panic(err)
+	}
+}
+
+func (s *Brews) markBrewed(w http.ResponseWriter, r *http.Request) {
+	id := chi.URLParam(r, "id")
+	if id == "" {
+		w.WriteHeader(http.StatusNotFound)
+		if _, err := w.Write([]byte("Brew not found")); err != nil {
+			panic(err)
+		}
+	}
+
+	var brewWeight brewIdWeight
+	if err := s.Db.Select(&brewWeight, `SELECT BeanWeight FROM brews WHERE id = ?`, id); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
+	}
+
+	beanService := Beans{Server: s.Server}
+	if newWeight, err := beanService.Brew(brewWeight.Id, brewWeight.Weight); err != nil {
+		w.WriteHeader(http.StatusInternalServerError)
 	}
 }

@@ -101,3 +101,22 @@ func (s *Beans) DeleteBean(w http.ResponseWriter, r *http.Request) {
 	}
 	w.WriteHeader(http.StatusOK)
 }
+
+func (s *Beans) Brew(id string, weight float32) (float32, error) {
+	tx := s.Db.MustBegin()
+	updateWeight := `UPDATE beans 
+					 SET Weight = Weight - ? 
+					 WHERE Id = ?`
+	tx.MustExec(updateWeight, weight, id)
+	if err := tx.Commit(); err != nil {
+		return 0, err
+	}
+
+	var newWeight float32
+	weightQuery := `SELECT Weight FROM beans WHERE Id = ?`
+	if err := tx.Select(&newWeight, weightQuery, id); err != nil {
+		return 0, err
+	}
+
+	return newWeight, nil
+}
