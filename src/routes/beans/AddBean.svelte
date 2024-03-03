@@ -32,14 +32,19 @@
 {#if show}
 	<div class="card">
 		<form method="POST" action="?/create" use:enhance={createBean}>
-			<label class="label">Name: <input class="input" name="name" /> </label>
-			<label class="label">Roaster: <input class="input" name="roaster" /> </label>
+			<div class="flex flex-row justify-between space-x-1">
+				<label class="label">Name: <input class="input" name="name" /> </label>
+				<label class="label">Roaster: <input class="input" name="roaster" /> </label>
+			</div>
 			<label class="label">Weight: <input class="input" name="weight" /> </label>
 			<label class="label">Country: <input class="input" name="country" /> </label>
 			<label class="label">Varietal <input class="input" name="varietal" /> </label>
 			<label class="label">Altitude <input class="input" name="altitude" /> </label>
 			<label class="label">Notes: <input class="input" name="notes" /> </label>
-			<button class="button" type="submit">Create</button>
+			<div class="flex flex-row justify-between">
+				<button class="button" type="submit">Create</button>
+				<button class="button" on:click={() => (show = false)}>Cancel</button>
+			</div>
 		</form>
 	</div>
 {/if}

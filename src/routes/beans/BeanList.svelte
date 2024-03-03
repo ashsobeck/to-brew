@@ -12,7 +12,7 @@
 				<li>{bean.varietal}</li>
 				<li>{bean.process}</li>
 				<li>{bean.altitude}</li>
-				<li>Amount left {bean.weight}g</li>
+				<li>Amount left: {bean.weight}g</li>
 			</ul>
 		</div>
 	{/each}

@@ -17,11 +17,11 @@
 	beans.set(data.beans);
 </script>
 
-<div class="w-full h-screen grid grid-cols-[auto_1fr_auto] gap-x-1 items-center">
+<div class="w-full h-screen grid gap-x-1 items-center p-2">
 	<div class="bg-surface-500/30 h-full card p-4">
 		Beans
 		<BeanList />
 		<AddBean />
 	</div>
-	<div class="bg-surface-500/30 h-full card p-4">current bean</div>
+	<!-- <div class="bg-surface-500/30 h-full card p-4">current bean</div> -->
 </div>

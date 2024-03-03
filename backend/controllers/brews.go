@@ -222,7 +222,7 @@ func (s *Brews) markBrewed(w http.ResponseWriter, r *http.Request) {
 	}
 
 	beanService := Beans{Server: s.Server}
-	if newWeight, err := beanService.Brew(brewWeight.Id, brewWeight.Weight); err != nil {
+	if _, err := beanService.Brew(brewWeight.Id, brewWeight.Weight); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
 	}
 }
