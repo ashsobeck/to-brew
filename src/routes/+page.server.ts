@@ -1,4 +1,4 @@
-import { convertBrew, type Brew, type ToBrew } from "$lib/types";
+import { convertBrew, type Brew, type ToBrew, type BrewedResponse } from "$lib/types";
 import type { Actions } from "@sveltejs/kit";
 
 export async function load() {
@@ -34,17 +34,18 @@ export const actions: Actions = {
         console.log("creating...")
         console.log(data)
         const time = data.get('time') as string === '' ? new Date() : new Date(data.get('time') as string)
+        console.log(time)
+        console.log(data.get('weight') as unknown as number)
         const response = await fetch('http://localhost:3333/tobrews/', {
             method: 'POST',
             body: JSON.stringify({
                 // name: data.get('name'),
                 bean: data.get('bean'),
-                newBean: data.get('bean'),
                 // roaster: { String: data.get('roaster') as string, Valid: true },
                 // link: { String: data.get('link') as string, Valid: true },
-                weight: data.get('weight'),
+                weight: parseFloat(data.get('weight') as string),
                 brewed: false,
-                timeToBrew: time.toISOString()
+                timeToBrew: new Date().toISOString()
             }),
             headers: {
                 'Content-Type': 'application/json',
@@ -56,7 +57,7 @@ export const actions: Actions = {
         console.log(brew);
 
     },
-    brewed: async ({ cookies, request }): Promise<{ success: boolean; brew: ToBrew; }> => {
+    update: async ({ cookies, request }): Promise<{ success: boolean; brew: ToBrew; }> => {
         const data = await request.formData();
         console.log(data)
         const time = data.get('time')?.toString() ?? new Date().toISOString()
@@ -72,6 +73,7 @@ export const actions: Actions = {
                 // name: data.get('name')?.toString(),
                 // roaster: { String: data.get('roaster')?.toString(), Valid: true },
                 // link: { String: data.get('link')?.toString(), Valid: true },
+                bean: data.get('bean') as string,
                 brewed: !strToBool(data.get('brewed')?.toString()),
                 timeToBrew: time
             }),
@@ -81,9 +83,29 @@ export const actions: Actions = {
             }
         });
         const brew = (await response.json()) as Brew;
-        console.log("marked as brewed:")
+        console.log("updated")
         console.log(brew)
         console.log(convertBrew(brew))
         return { success: brew !== null, brew: convertBrew(brew) }
+    },
+    brewed: async ({ cookies, request }): Promise<{ success: boolean; brew: ToBrew, newWeight: number; }> => {
+        const data = await request.formData();
+        console.log(data)
+        const time = data.get('time')?.toString() ?? new Date().toISOString()
+        console.log(time)
+        const response = await fetch(`http://localhost:3333/tobrews/complete/${data.get('id')?.toString()}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+                Origin: 'http://localhost:5173/'
+            }
+        });
+        console.log("response:")
+        console.log(response);
+        const brew = (await response.json()) as BrewedResponse
+        console.log("marked as brewed:")
+        console.log(brew)
+        console.log(convertBrew(brew.brew))
+        return { success: brew !== null, brew: convertBrew(brew.brew), newWeight: brew.newWeight }
     }
 }

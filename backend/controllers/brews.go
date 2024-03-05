@@ -27,6 +27,11 @@ type brewIdWeight struct {
 	Weight float32
 }
 
+type BrewResponse struct {
+	Brew      types.ToBrew `json:"brew"`
+	NewWeight float32      `json:"newWeight"`
+}
+
 func (s *Brews) BrewRoutes() chi.Router {
 	r := chi.NewRouter()
 
@@ -43,6 +48,9 @@ func (s *Brews) BrewRoutes() chi.Router {
 		r.Put("/", s.updateBrew)
 		r.Delete("/", s.deleteBrew)
 	})
+	r.Route("/complete/{id}", func(r chi.Router) {
+		r.Put("/", s.markBrewed)
+	})
 
 	return r
 }
@@ -51,12 +59,14 @@ func (s *Brews) makeNewBrew(w http.ResponseWriter, r *http.Request) {
 	reqBody, err := io.ReadAll(r.Body)
 	slog.Info("Request Body: %s", reqBody)
 	if err != nil {
+		slog.Error(err.Error())
 		panic(err)
 	}
 
 	var brew types.ToBrew
 	err = json.Unmarshal(reqBody, &brew)
 	if err != nil {
+		slog.Error(err.Error())
 		panic(err)
 	}
 	if id := chi.URLParam(r, "id"); id != "" {
@@ -77,6 +87,7 @@ func (s *Brews) makeNewBrew(w http.ResponseWriter, r *http.Request) {
 	tx.Commit()
 
 	if err = json.NewEncoder(w).Encode(brew); err != nil {
+		slog.Error(err.Error())
 		panic(err)
 	}
 }
@@ -189,6 +200,7 @@ func (s *Brews) updateBrew(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tx := s.Db.MustBegin()
+	slog.Info(brew.Bean)
 	tx.MustExec(`
         UPDATE tobrews 
         SET name = IFNULL(?, name), bean = IFNULL(?, bean), link = IFNULL(?, link), roaster = IFNULL(?, roaster), brewed = IFNULL(?, brewed)
@@ -209,6 +221,7 @@ func (s *Brews) updateBrew(w http.ResponseWriter, r *http.Request) {
 
 func (s *Brews) markBrewed(w http.ResponseWriter, r *http.Request) {
 	id := chi.URLParam(r, "id")
+	slog.Info(id)
 	if id == "" {
 		w.WriteHeader(http.StatusNotFound)
 		if _, err := w.Write([]byte("Brew not found")); err != nil {
@@ -216,13 +229,51 @@ func (s *Brews) markBrewed(w http.ResponseWriter, r *http.Request) {
 		}
 	}
 
-	var brewWeight brewIdWeight
-	if err := s.Db.Select(&brewWeight, `SELECT BeanWeight FROM brews WHERE id = ?`, id); err != nil {
+	slog.Info("Marking as brewed...")
+	tx := s.Db.MustBegin()
+	tx.MustExec(`UPDATE tobrews SET brewed = true WHERE id = ?`, id)
+	if err := tx.Commit(); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		slog.Error(err.Error())
+		if _, err = w.Write([]byte(err.Error())); err != nil {
+			panic(err)
+		}
+		return
 	}
 
-	beanService := Beans{Server: s.Server}
-	if _, err := beanService.Brew(brewWeight.Id, brewWeight.Weight); err != nil {
+	slog.Info("Getting brew...")
+
+	var brew types.ToBrew
+	if err := s.Db.Get(&brew, `SELECT * FROM tobrews WHERE id = ? LIMIT 1`, id); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
+		slog.Error(err.Error())
+		if _, err = w.Write([]byte(err.Error())); err != nil {
+			panic(err)
+		}
+		return
+	}
+	slog.Info("brew:", brew)
+
+	beanService := Beans{Server: s.Server}
+	var res BrewResponse
+	res.Brew = brew
+
+	if newWeight, err := beanService.Brew(brew.Bean, brew.BeanWeight); err == nil {
+		res.NewWeight = newWeight
+		if err := json.NewEncoder(w).Encode(res); err != nil {
+			w.WriteHeader(http.StatusInternalServerError)
+			slog.Error(err.Error())
+
+			if _, err = w.Write([]byte(err.Error())); err != nil {
+				panic(err)
+			}
+			return
+		}
+	} else {
+		w.WriteHeader(http.StatusNotFound)
+		if _, err = w.Write([]byte("Bean not found")); err != nil {
+			panic(err)
+		}
+
 	}
 }

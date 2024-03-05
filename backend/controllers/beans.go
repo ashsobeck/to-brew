@@ -94,7 +94,7 @@ func (s *Beans) DeleteBean(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tx := s.Db.MustBegin()
-	deleteBean := `DELETE FROM beans WHERE id = ?`
+	deleteBean := `DELETE FROM beans WHERE Id = ?`
 	tx.MustExec(deleteBean, id)
 	if err := tx.Commit(); err != nil {
 		w.WriteHeader(http.StatusInternalServerError)
@@ -103,18 +103,22 @@ func (s *Beans) DeleteBean(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Beans) Brew(id string, weight float32) (float32, error) {
+	slog.Info("Brew Weight: ", weight)
+	slog.Info("Id: ", id)
 	tx := s.Db.MustBegin()
 	updateWeight := `UPDATE beans 
 					 SET Weight = Weight - ? 
 					 WHERE Id = ?`
 	tx.MustExec(updateWeight, weight, id)
 	if err := tx.Commit(); err != nil {
+		slog.Error("update err:", err.Error())
 		return 0, err
 	}
 
 	var newWeight float32
 	weightQuery := `SELECT Weight FROM beans WHERE Id = ?`
-	if err := tx.Select(&newWeight, weightQuery, id); err != nil {
+	if err := s.Db.Get(&newWeight, weightQuery, id); err != nil {
+		slog.Error("Get error:", err.Error())
 		return 0, err
 	}
 

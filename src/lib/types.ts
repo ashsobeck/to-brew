@@ -21,6 +21,11 @@ export type NullString = {
 	Valid: boolean;
 };
 
+export type BrewedResponse = {
+	brew: Brew;
+	newWeight: number;
+}
+
 export const convertBrew = (brew: Brew): ToBrew => {
 	return ({
 		...brew,
