@@ -8,7 +8,9 @@ import (
 
 	brews "tobrew/controllers"
 	"tobrew/types"
+	"tobrew/views"
 
+	"github.com/a-h/templ"
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"
 	"github.com/go-chi/cors"
@@ -60,6 +62,10 @@ func handleRequests(s *types.Server) {
 
 	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
 		w.Write([]byte("hello world!"))
+	})
+
+	r.Get("/htmx", func(w http.ResponseWriter, r *http.Request) {
+		templ.Handler(views.Index()).ServeHTTP(w, r)
 	})
 
 	brewController := brews.Brews{Server: s}
