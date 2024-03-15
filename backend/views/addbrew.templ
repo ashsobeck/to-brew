@@ -1,0 +1,19 @@
+package views
+
+import "tobrew/types"
+
+templ AddBrew(beans []types.Bean) {
+	<div>
+		<label>
+			Bean:
+			<select>
+				for _, bean := range beans {
+					<option value={ bean.Id }>{ bean.Name }</option>
+				}
+			</select>
+		</label>
+		<label>
+			Bean Weight (g): <input type="number"/>
+		</label>
+	</div>
+}

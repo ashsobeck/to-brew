@@ -1,7 +1,10 @@
 <script lang="ts">
-	import { beans } from '$lib/stores';
-	import { SlideToggle } from '@skeletonlabs/skeleton';
+	import { applyAction, enhance } from '$app/forms';
+	import { beans, tobrews } from '$lib/stores';
+	import type { ToBrew } from '$lib/types';
+	import type { ActionData } from './$types';
 
+	export let form: ActionData;
 	let showBrew = false;
 	let defaultTime = new Date().toLocaleTimeString([], {
 		hour12: false,
@@ -12,10 +15,28 @@
 	$: beanNamesAndIds = $beans.map((b) => {
 		return { name: b.name, id: b.id };
 	});
+
+	let updateBrew = () => {
+		return async ({ result }) => {
+			console.log(result);
+			console.log($tobrews);
+			// needed to update the form prop
+			await applyAction(result);
+			const brewIdx = $tobrews.findIndex((brew) => brew.id === form?.brew.id);
+			console.log('form:');
+			console.log(form);
+			console.log(brewIdx);
+
+			$tobrews[brewIdx] = form?.brew as ToBrew;
+
+			$tobrews = [...$tobrews];
+			console.log($tobrews);
+		};
+	};
 </script>
 
 {#if showBrew}
-	<form method="POST" action="?/create">
+	<form method="POST" action="?/create" use:enhance={updateBrew}>
 		<div class="card p-2">
 			<label class="label"
 				>Bean:

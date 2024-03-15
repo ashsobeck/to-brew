@@ -107,7 +107,7 @@ func (s *Beans) Brew(id string, weight float32) (float32, error) {
 	slog.Info("Id: ", id)
 	tx := s.Db.MustBegin()
 	updateWeight := `UPDATE beans 
-					 SET Weight = Weight - ? 
+					 SET weight = weight - ? 
 					 WHERE Id = ?`
 	tx.MustExec(updateWeight, weight, id)
 	if err := tx.Commit(); err != nil {
@@ -116,7 +116,7 @@ func (s *Beans) Brew(id string, weight float32) (float32, error) {
 	}
 
 	var newWeight float32
-	weightQuery := `SELECT Weight FROM beans WHERE Id = ?`
+	weightQuery := `SELECT weight FROM beans WHERE Id = ?`
 	if err := s.Db.Get(&newWeight, weightQuery, id); err != nil {
 		slog.Error("Get error:", err.Error())
 		return 0, err

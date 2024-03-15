@@ -76,14 +76,14 @@ func (s *Brews) makeNewBrew(w http.ResponseWriter, r *http.Request) {
 	}
 
 	tx := s.Db.MustBegin()
-	slog.Info("Brew Name: %s", brew.Name)
-	slog.Info("Bean: %s", brew.Bean)
-	slog.Info("Time: %s", brew.TimeToBrew)
+	slog.Info("Brew Name:", brew.Name)
+	slog.Info("Bean:", brew.Bean)
+	slog.Info("Time:", brew.TimeToBrew)
 	brewTime, _ := time.Parse(time.RFC3339, brew.TimeToBrew)
-	slog.Info("Time: %s", brewTime)
-	tx.MustExec(`INSERT INTO tobrews (id, name, bean, roaster, link, brewed, time_of_brew, created)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?)`,
-		brew.Id, brew.Name, brew.Bean, brew.Roaster.String, brew.Link.String, brew.Brewed, brewTime, time.Now().UTC())
+	slog.Info("Time:", brewTime)
+	tx.MustExec(`INSERT INTO tobrews (id, name, bean, roaster, link, brewed, time_of_brew, created, BeanWeight)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+		brew.Id, brew.Name, brew.Bean, brew.Roaster.String, brew.Link.String, brew.Brewed, brewTime, time.Now().UTC(), brew.BeanWeight)
 	tx.Commit()
 
 	if err = json.NewEncoder(w).Encode(brew); err != nil {
@@ -203,7 +203,7 @@ func (s *Brews) updateBrew(w http.ResponseWriter, r *http.Request) {
 	slog.Info(brew.Bean)
 	tx.MustExec(`
         UPDATE tobrews 
-        SET name = IFNULL(?, name), bean = IFNULL(?, bean), link = IFNULL(?, link), roaster = IFNULL(?, roaster), brewed = IFNULL(?, brewed)
+        SET name = IF(? != "", name, ?), bean = IF(? != "", ?, bean), link = IF(? != "", ?, link), roaster = IF(? != "", ?, roaster), brewed = IFNULL(?, brewed)
         WHERE id = ?
     `, brew.Name, brew.Bean, brew.Link, brew.Roaster, brew.Brewed, id)
 
