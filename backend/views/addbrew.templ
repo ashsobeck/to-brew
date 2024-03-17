@@ -2,18 +2,31 @@ package views
 
 import "tobrew/types"
 
-templ AddBrew(beans []types.Bean) {
-	<div>
-		<label>
-			Bean:
-			<select>
-				for _, bean := range beans {
-					<option value={ bean.Id }>{ bean.Name }</option>
-				}
-			</select>
-		</label>
-		<label>
-			Bean Weight (g): <input type="number"/>
-		</label>
-	</div>
+templ NewBrew(beans []types.Bean, time string) {
+	<form id="create-brew">
+		<div>
+			<label>
+				Bean:
+				<select>
+					for _, bean := range beans {
+						<option value={ bean.Id }>{ bean.Name }</option>
+					}
+				</select>
+			</label>
+			<label>
+				Bean Weight (g): <input type="number"/>
+			</label>
+			<label>
+				Time of Brew:
+				<div>
+					<input type="time" value={ time }/>
+				</div>
+			</label>
+			@Button("", "/tobrews", "#create-brew", "outerHTML", "post", "Create")
+		</div>
+	</form>
+}
+
+templ AddBrewButton() {
+	@Button("", "/new-brew", "#brew-list", "afterbegin", "get", "+ Add Brew")
 }

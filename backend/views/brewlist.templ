@@ -1,0 +1,38 @@
+package views
+
+import "tobrew/types"
+import "strconv"
+
+templ BrewList(tobrews []types.ToBrew, brewed []types.ToBrew) {
+	<div class="flex p-2 w-full space-x-2" id="brews-container">
+		<div class="card p-4 basis-1/2">
+			To Brew
+			<ul id="brew-list">
+				for _, brew := range tobrews {
+					<div class="card card-hover p-2">
+						<li>{ brew.Bean }</li>
+						<!-- <li>{brew.name}</li> -->
+						<li>{ brew.Id }</li>
+						<li>{ brew.TimeToBrew }</li>
+						<li>{ strconv.FormatBool(brew.Brewed) }</li>
+						@Button("variant-filled", "/tobrews/complete/"+brew.Id, "#brews-container", "outerHTML", "put", "Brew")
+					</div>
+				}
+			</ul>
+		</div>
+		<div>
+			Brewed
+			<ul id="brewed-list">
+				for _, brew := range tobrews {
+					<div class="card card-hover p-2">
+						<li>{ brew.Bean }</li>
+						<!-- <li>{brew.name}</li> -->
+						<li>{ brew.Id }</li>
+						<li>{ brew.TimeToBrew }</li>
+						<li>{ strconv.FormatBool(brew.Brewed) }</li>
+					</div>
+				}
+			</ul>
+		</div>
+	</div>
+}
