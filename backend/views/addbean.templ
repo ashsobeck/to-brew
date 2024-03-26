@@ -1,5 +1,7 @@
 package views
 
+import "tobrew/views/components"
+
 templ AddBean() {
 	<div class="card">
 		<form>
@@ -13,7 +15,7 @@ templ AddBean() {
 			<label class="label">Altitude <input class="input" name="altitude"/> </label>
 			<label class="label">Notes: <input class="input" name="notes"/> </label>
 			<div class="flex flex-row justify-between">
-				@Button("", "/beans", "#bean-list", "afterbegin", "post", "Create")
+				@components.Button("", "/beans", "#bean-list", "afterbegin", "post", "Create")
 				<!-- <button class="button" on:click={() => (show = false)}>Cancel</button>-->
 			</div>
 		</form>

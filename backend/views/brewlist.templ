@@ -1,7 +1,8 @@
 package views
 
-import "tobrew/types"
 import "strconv"
+import "tobrew/types"
+import "tobrew/views/components"
 
 templ BrewList(tobrews []types.ToBrew, brewed []types.ToBrew) {
 	<div class="flex p-2 w-full space-x-2" id="brews-container">
@@ -15,7 +16,7 @@ templ BrewList(tobrews []types.ToBrew, brewed []types.ToBrew) {
 						<li>{ brew.Id }</li>
 						<li>{ brew.TimeToBrew }</li>
 						<li>{ strconv.FormatBool(brew.Brewed) }</li>
-						@Button("variant-filled", "/tobrews/complete/"+brew.Id, "#brews-container", "outerHTML", "put", "Brew")
+						@components.Button("variant-filled", "/tobrews/complete/"+brew.Id, "#brews-container", "outerHTML", "put", "Brew")
 					</div>
 				}
 			</ul>

@@ -1,6 +1,9 @@
 package views
 
-import "tobrew/types"
+import (
+	"tobrew/types"
+	"tobrew/views/components"
+)
 
 templ NewBrew(beans []types.Bean, time string) {
 	<form id="create-brew">
@@ -22,7 +25,7 @@ templ NewBrew(beans []types.Bean, time string) {
 					<input type="time" value={ time }/>
 				</div>
 			</label>
-			@Button("", "/tobrews", "#create-brew", "outerHTML", "post", "Create")
+			@components.Button("", "/tobrews", "#create-brew", "outerHTML", "post", "Create")
 		</div>
 	</form>
 }
